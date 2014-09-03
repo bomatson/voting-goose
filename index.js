@@ -1,14 +1,30 @@
-var goose = require('mongoose');
-goose.connect('mongodb://localhost/test');
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 
-var db = goose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function open() {
-  console.log('connection open');
-  var userSchema = goose.Schema({
-    name: String
-  })
+mongoose.connect('localhost', 'test');
 
-  var User = goose.model('User', userSchema);
-  var robert = new User({name: 'Robert';)
+var voteSchema = new Schema({
+  createdAt: { type: Date, default: Date.now }
+})
+
+var userSchema = new Schema({
+  username: String,
+  email: String,
+  votes: [voteSchema]
+})
+
+userSchema.statics.findByUsername = function(name, callback) {
+  this.find({username: new RegExp(name, 'i') }, callback);
+}
+
+var User = mongoose.model('User', userSchema);
+
+var user = new User({username: 'Bobby',votes: [{}, {created_at: Date.now}]})
+
+user.save(function(err) {
+  console.log(this);
+});
+
+User.findByUsername('bobby', function(err, users){
+  console.log(users.length);
 });
