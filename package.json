@@ -1,0 +1,27 @@
+{
+  "name": "voting-goose",
+  "version": "0.0.0",
+  "description": "Voting for Gooses",
+  "main": "index.js",
+  "dependencies": {
+    "mongoose": "~3.8.15"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bomatson/voting-goose.git"
+  },
+  "keywords": [
+    "mongoose",
+    "node"
+  ],
+  "author": "Bobby Matson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bomatson/voting-goose/issues"
+  },
+  "homepage": "https://github.com/bomatson/voting-goose"
+}
