@@ -1,30 +1,41 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var express = require('express'),
+    fs = require('fs'),
+    passport = require('passport'),
+    env = process.env.NODE_ENV || 'development',
+    config = require('./config/config')[env],
+    mongoose = require('mongoose');
 
-mongoose.connect('localhost', 'test');
+var connect =  function(){
+  var options = { server: { socketOptions: { keepAlive: 1 }}};
+  mongoose.connect(config.db, options);
+};
 
-var voteSchema = new Schema({
-  createdAt: { type: Date, default: Date.now }
-})
+connect();
 
-var userSchema = new Schema({
-  username: String,
-  email: String,
-  votes: [voteSchema]
-})
-
-userSchema.statics.findByUsername = function(name, callback) {
-  this.find({username: new RegExp(name, 'i') }, callback);
-}
-
-var User = mongoose.model('User', userSchema);
-
-var user = new User({username: 'Bobby',votes: [{}, {created_at: Date.now}]})
-
-user.save(function(err) {
-  console.log(this);
+mongoose.connection.on('error', function (err) {
+  console.log(err);
 });
 
-User.findByUsername('bobby', function(err, users){
-  console.log(users.length);
+mongoose.connection.on('disconnected', function () {
+  connect();
 });
+
+var models_path = __dirname + '/app/models';
+
+fs.readdirSync(models_path).forEach(function (file) {
+  if (~file.indexOf('.js')) { require(models_path + '/' + file) };
+});
+
+require('./config/passport')(passport, config);
+
+var app = express()
+
+require('./config/express')(app, config, passport)
+require('./config/routes')(app, passport)
+
+var port = process.env.PORT || 3000
+
+app.listen(port);
+console.log('Express app started on port '+port);
+
+exports = module.exports = app
